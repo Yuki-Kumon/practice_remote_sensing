@@ -79,9 +79,11 @@ class stereo_match_with_bilinear_interporlate():
         res_d[:, :2] = res[:, :2]
         res_d[:, 2] = res[:, 0] - res[:, 2]  # 視差
         res_d[:, 3] = res[:, 4]  # 相関値
-        # ソートする
-        res_d = np.sort(res_d, axis=0)
-        res_d = np.sort(res_d, axis=1)
+        # ソートする(pandas利用)
+        df = pd.DataFrame(data=res_d, columns=['x', 'y', 'd', 'R'])
+        df = df.sort_values(['x', 'y'])
+        # numpyに戻してreturnする
+        return df.values
 
 
 
