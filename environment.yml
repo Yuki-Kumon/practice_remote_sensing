@@ -3,14 +3,19 @@ channels:
   - conda-forge
   - pytorch
 dependencies:
-  - python==3.6.1
+  - python==3.7.4
   - opencv
-  - matplotlib=2.0.2
+  - matplotlib
   - pytorch=1.2.0
   - torchvision=0.4.0
-#   - cudatoolkit=8.0
+  # - cudatoolkit=10.0
   - absl-py=0.7.1
-  - pip=9.0.1
+  - scikit-learn  # kNN required
+  - tqdm
+  - pyyaml
+  - pip
   - pip:
     - tensorboardx==1.6
     - torchsummary
+    # - tensorflow-tensorboard
+    # - tensorflow
