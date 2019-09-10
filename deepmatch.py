@@ -28,7 +28,7 @@ import time
 ROOT = '/Users/yuki_kumon/Documents/python/practice_remote_sensing/src/deepmatching'
 
 
-def deepmatch(img1, img2, nt=2):
+def deepmatch(img1, img2, max_scale=5, nt=2):
     '''
     自作pythonラッパー。。。
     '''
@@ -45,7 +45,7 @@ def deepmatch(img1, img2, nt=2):
     print('image 1 size: {}, image 2 wize: {}'.format(cv2.imread(img1).shape, cv2.imread(img2).shape))
 
     # deepmatchingを行う
-    proc = subprocess.run([cmd, img1, img2, '-nt', str(nt)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.run([cmd, img1, img2, '-nt', str(nt), '-max_scale', str(max_scale)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     array = proc.stdout.decode("utf8")
     array = array.replace('\n', ' ').split(' ')[:-1]
