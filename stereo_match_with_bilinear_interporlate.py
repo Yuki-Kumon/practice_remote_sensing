@@ -12,6 +12,20 @@ Last Update :
 from deepmatch import deepmatch
 from tif_to_png import tif_to_png
 
+import os
+
+
+class stereo_match_with_bilinear_interporlate():
+    '''
+    stereo matching
+    '''
+
+    def __init__(self, img1_path, img2_path):
+        if not os.path.exists(img1_path):
+            print('img1 path \'{}\' does not exist!'.format(img1_path))
+        if not os.path.exists(img2_path):
+            print('img2 path \'{}\' does not exist!'.format(img2_path))
+
 
 if __name__ == '__main__':
     img1 = '/Users/yuki_kumon/Documents/python/practice_remote_sensing/data/band3s.tif'
@@ -24,7 +38,4 @@ if __name__ == '__main__':
     b = tif_to_png(img2, cut)
     b.create_tmp()
 
-    # res = deepmatch(img1, img2, nt=0)
-    res = deepmatch(a(), b(), max_scale=1, nt=2)
-    print(res)
-    print(len(res))
+    cls = stereo_match_with_bilinear_interporlate(a(), b())
