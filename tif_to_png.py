@@ -47,7 +47,7 @@ class tif_to_png():
         img = cv2.imread(self.path)
 
         # create tmp file
-        self.savepath = os.path.join(os.getcwd(), os.path.splitext(os.path.basename(self.path))[0] + '.png')
+        self.savepath = os.path.join(os.getcwd(), os.path.splitext(os.path.basename(self.path))[0] + '_tmp.png')
         if self.cut:
             cv2.imwrite(self.savepath, self.cutter(img))
         else:

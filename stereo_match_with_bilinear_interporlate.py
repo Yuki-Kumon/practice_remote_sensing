@@ -12,7 +12,10 @@ Last Update :
 from deepmatch import deepmatch
 from tif_to_png import tif_to_png
 
+import cv2
+
 import os
+import sys
 
 
 class stereo_match_with_bilinear_interporlate():
@@ -20,11 +23,51 @@ class stereo_match_with_bilinear_interporlate():
     stereo matching
     '''
 
-    def __init__(self, img1_path, img2_path):
+    def __init__(self, img1_path, img2_path, cut_start=[0, 0], cut_size=[200, 200], cut_number=[1, 1]):
+        '''
+        input image: tif or png
+        '''
+        # sanity check
         if not os.path.exists(img1_path):
             print('img1 path \'{}\' does not exist!'.format(img1_path))
+            sys.exit()
         if not os.path.exists(img2_path):
             print('img2 path \'{}\' does not exist!'.format(img2_path))
+            sys.exit()
+
+        if os.path.splitext(img1_path)[1] != '.png' and os.path.splitext(img1_path)[1] != '.tif':
+            print('img1 path extension \'{}\' is not supported. tif or png is ok.'.format(os.path.splitext(img1_path)[1]))
+            sys.exit()
+        if os.path.splitext(img2_path)[1] != '.png' and os.path.splitext(img2_path)[1] != '.tif':
+            print('img2 path extension \'{}\' is not supported. tif or png is ok.'.format(os.path.splitext(img2_path)[1]))
+            sys.exit()
+
+        self.img1_path = img1_path
+        self.img2_path = img2_path
+        self.cut_start = cut_start
+        self.cut_size = cut_size
+        self.cut_number = cut_number
+
+    def deepmatching(self):
+        '''
+        deepmatching
+        '''
+        for i in range(self.cut_number[0]):
+            for j in range(self.cut_number[1]):
+                cut = [
+                    self.cut_start[0] + self.cut_size[0] * i, self.cut_start[0] + self.cut_size[0] * (i + 1),
+                    self.cut_start[1] + self.cut_size[1] * j, self.cut_start[1] + self.cut_size[1] * (j + 1)
+                ]
+                # create tmp images
+                img1_cut = tif_to_png(self.img1_path, cut)
+                img1_cut.create_tmp()
+                img2_cut = tif_to_png(self.img2_path, cut)
+                img2_cut.create_tmp()
+
+                # DeepMatching
+                res = deepmatch(img1_cut(), img2_cut(), max_scale=1, nt=2)
+                print(res)
+
 
 
 if __name__ == '__main__':
@@ -39,3 +82,4 @@ if __name__ == '__main__':
     b.create_tmp()
 
     cls = stereo_match_with_bilinear_interporlate(a(), b())
+    cls.deepmatching()
