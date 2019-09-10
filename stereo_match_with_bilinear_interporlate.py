@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-ディープマッチングによるステレオマッチに際し、バイリニア補間を用いる。
+ディープマッチングによるステレオマッチに際し、バイリニア補間(cv2.resize())を用いる。
 Author :
     Yuki Kumon
 Last Update :
@@ -13,6 +13,8 @@ from deepmatch import deepmatch
 from tif_to_png import tif_to_png
 
 import cv2
+import numpy as np
+import pandas as pd
 
 import os
 import sys
@@ -66,7 +68,20 @@ class stereo_match_with_bilinear_interporlate():
 
                 # DeepMatching
                 res = deepmatch(img1_cut(), img2_cut(), max_scale=1, nt=2)
-                print(res)
+                hoge = self.res_sort(res)
+
+    def res_sort(self, res):
+        '''
+        deepmatchingの返り値をソートする
+        '''
+        # resを整形
+        res_d = np.empty((res.shape[0], 4))
+        res_d[:, :2] = res[:, :2]
+        res_d[:, 2] = res[:, 0] - res[:, 2]  # 視差
+        res_d[:, 3] = res[:, 4]  # 相関値
+        # ソートする
+        res_d = np.sort(res_d, axis=0)
+        res_d = np.sort(res_d, axis=1)
 
 
 
