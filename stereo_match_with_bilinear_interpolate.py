@@ -129,9 +129,15 @@ class stereo_match_with_bilinear_interpolate():
         # result arrayのうち、相関値は使わずに行う
         d_array = result_array[:, :, :, :3].astype('int64')
         # 整形後の配列のサイズを計算しておく
-        print(d_array)
-        # resultをタイル状に並べ換える
-        res_reshape = np.empty((self.cut_size[0] * self.cut_number[0], self.cut_size[1] * self.cut_number[1]))
+        x_min = d_array[0, 0, 0, 0]
+        y_min = d_array[0, 0, 0, 1]
+        x_max = d_array[0, 0, -1, 0]
+        y_max = d_array[0, 0, -1, 1]
+
+        x_num = int((x_max - x_min) / 8)
+        y_num = int((y_max - y_min) / 8)
+
+        # タイル状に並べ換える
         return 0
 
     def __call__(self):
