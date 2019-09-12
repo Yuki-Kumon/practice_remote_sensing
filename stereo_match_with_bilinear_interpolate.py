@@ -25,7 +25,7 @@ class stereo_match_with_bilinear_interpolate():
     stereo matching
     '''
 
-    def __init__(self, img1_path, img2_path, cut_start=[0, 0], cut_size=[100, 200], cut_number=[2, 1]):
+    def __init__(self, img1_path, img2_path, cut_start=[0, 0], cut_size=[200, 200], cut_number=[1, 1]):
         '''
         input image: tif or png
         '''
@@ -54,6 +54,7 @@ class stereo_match_with_bilinear_interpolate():
         '''
         deepmatching
         '''
+        result_array = 0  # dummy
         for i in range(self.cut_number[0]):
             for j in range(self.cut_number[1]):
                 cut = [
@@ -66,6 +67,7 @@ class stereo_match_with_bilinear_interpolate():
                 img2_cut = tif_to_png(self.img2_path, cut)
                 img2_cut.create_tmp()
 
+                """
                 # DeepMatching
                 res = deepmatch(img1_cut(), img2_cut(), max_scale=1, nt=2)
                 # 視差を計算した上で格子状にソートした結果を受け取る。後で二次関数近似とかを使えると嬉しいので相関値も。
@@ -77,6 +79,32 @@ class stereo_match_with_bilinear_interpolate():
                     result_array[0, 0] = res_d_sort
                 else:
                     result_array[i, j] = res_d_sort
+                """
+                result_array = self.deepmatching_update(cut, img1_cut, img2_cut, result_array, i, j)
+        return result_array
+
+    def deepmatching_update(self, cut, tmp1, tmp2, result_array, i, j):
+        '''
+        たまに変なサイズで帰ってくることがあるのでそれ対策
+        一番初めが妙なサイズだと対応できない。。。
+        '''
+        while True:
+            # DeepMatching
+            res = deepmatch(tmp1(), tmp2(), max_scale=1, nt=2)
+            # 視差を計算した上で格子状にソートした結果を受け取る。後で二次関数近似とかを使えると嬉しいので相関値も。
+            res_d_sort = self.res_sort(res)
+            # 配列に格納
+            if i == 0 and j == 0:
+                del result_array
+                result_array = np.empty((self.cut_number[0], self.cut_number[1], res_d_sort.shape[0], res_d_sort.shape[1]))
+                result_array[0, 0] = res_d_sort
+                break
+            else:
+                try:
+                    result_array[i, j] = res_d_sort
+                    break
+                except:
+                    print('error occurs')
         return result_array
 
     def res_sort(self, res):
@@ -98,9 +126,12 @@ class stereo_match_with_bilinear_interpolate():
         '''
         deepmatchingの結果を補完し、視差画像にする
         '''
-        # 補間の倍率
-        rate = int(np.sqrt(self.cut_size[0] * self.cut_size[1] / result_array.shape[0] / result_array.shape[1]))
+        # result arrayのうち、相関値は使わずに行う
+        d_array = result_array[:, :, :, :3].astype('int64')
+        # 整形後の配列のサイズを計算しておく
+        print(d_array)
         # resultをタイル状に並べ換える
+        res_reshape = np.empty((self.cut_size[0] * self.cut_number[0], self.cut_size[1] * self.cut_number[1]))
         return 0
 
     def __call__(self):
@@ -109,6 +140,7 @@ class stereo_match_with_bilinear_interpolate():
         '''
         result_array = self.deepmatching()
         hoge = self.res_interpolate(result_array)
+
 
 
 
