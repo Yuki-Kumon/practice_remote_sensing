@@ -20,7 +20,7 @@ import os
 import sys
 
 
-class stereo_match_with_bilinear_interporlate():
+class stereo_match_with_bilinear_interpolate():
     '''
     stereo matching
     '''
@@ -68,7 +68,17 @@ class stereo_match_with_bilinear_interporlate():
 
                 # DeepMatching
                 res = deepmatch(img1_cut(), img2_cut(), max_scale=1, nt=2)
-                hoge = self.res_sort(res)
+                # 視差を計算した上で格子状にソートした結果を受け取る。後で二次関数近似とかを使えると嬉しいので相関値も。
+                res_d_sort = self.res_sort(res)
+
+                # 配列に格納
+                if i == 0 and j == 0:
+                    result_array = np.empty((self.cut_number[0], self.cut_number[1], res_d_sort.shape[0], res_d_sort.shape[1]))
+                    result_array[0, 0] = res_d_sort
+                else:
+                    result_array[i, j] = res_d_sort
+        return result_array
+
 
     def res_sort(self, res):
         '''
@@ -84,6 +94,8 @@ class stereo_match_with_bilinear_interporlate():
         df = df.sort_values(['x', 'y'])
         # numpyに戻してreturnする
         return df.values
+
+    def res_
 
 
 
