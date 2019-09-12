@@ -25,7 +25,7 @@ class stereo_match_with_bilinear_interpolate():
     stereo matching
     '''
 
-    def __init__(self, img1_path, img2_path, cut_start=[0, 0], cut_size=[200, 200], cut_number=[1, 1]):
+    def __init__(self, img1_path, img2_path, cut_start=[0, 0], cut_size=[100, 200], cut_number=[2, 1]):
         '''
         input image: tif or png
         '''
@@ -79,7 +79,6 @@ class stereo_match_with_bilinear_interpolate():
                     result_array[i, j] = res_d_sort
         return result_array
 
-
     def res_sort(self, res):
         '''
         deepmatchingの返り値をソートする
@@ -95,7 +94,21 @@ class stereo_match_with_bilinear_interpolate():
         # numpyに戻してreturnする
         return df.values
 
-    def res_
+    def res_interpolate(self, result_array):
+        '''
+        deepmatchingの結果を補完し、視差画像にする
+        '''
+        # 補間の倍率
+        rate = int(np.sqrt(self.cut_size[0] * self.cut_size[1] / result_array.shape[0] / result_array.shape[1]))
+        # resultをタイル状に並べ換える
+        return 0
+
+    def __call__(self):
+        '''
+        deepmatchingによるステレオマッチング
+        '''
+        result_array = self.deepmatching()
+        hoge = self.res_interpolate(result_array)
 
 
 
@@ -110,5 +123,5 @@ if __name__ == '__main__':
     b = tif_to_png(img2, cut)
     b.create_tmp()
 
-    cls = stereo_match_with_bilinear_interporlate(a(), b())
-    cls.deepmatching()
+    cls = stereo_match_with_bilinear_interpolate(a(), b())
+    cls()
